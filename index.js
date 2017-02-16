@@ -18,18 +18,19 @@ $(()=> {
             this.weather = '';
             this.weatherCode = 0;
             this.weatherDescription = '';
+            this.weatherTempActive = 'C';
             this.weatherTempK = 0;
             this.weatherTempC = 0;
             this.weatherTempF = 0;
 
             this.apiId = '38be1e36805f729eccd0ebc9fcafa83d';
-            this.uri = `http://api.openweathermap.org/data/2.5/weather`;
 
             navigator.geolocation.watchPosition(
                 (data) => {
                     this.lat = data.coords.latitude;
                     this.lon = data.coords.longitude;
-                    this.uri += `?appid=${this.apiId}&lat=${this.lat}&lon=${this.lon}`;
+                    this.uri = `http://api.openweathermap.org/data/2.5/weather` +
+                        `?appid=${this.apiId}&lat=${this.lat}&lon=${this.lon}`;
 
                     this.getWeather(callback);
                 },
@@ -37,7 +38,8 @@ $(()=> {
                 {
                     enableHighAccuracy: true,
                     maximumAge: 5000
-                });
+                }
+            );
         };
 
         getWeather(callback) {
@@ -59,9 +61,29 @@ $(()=> {
         $('#weather-icon').addClass('wi wi-owm-' + app.weatherCode);
         $('#location').html(app.location);
         $('#weather').html(app.weatherDescription);
-        $('#weather-temp').html(`${app.weatherTempC} ºC`);
+        $('.weather-temp-number').text(app.weatherTempC);
+        $('.weather-temp-type').text(' ºC');
+    };
+
+    const changeWeatherUnit = (app) => {
+
+        switch (app.weatherTempActive) {
+            case 'K':
+                app.weatherTempActive = 'C';
+                break;
+            case 'C':
+                app.weatherTempActive = 'F';
+                break;
+            case 'F':
+                app.weatherTempActive = 'K';
+                break;
+        }
+
+        $('.weather-temp-number').text(app['weatherTemp' + app.weatherTempActive]);
+        $('.weather-temp-type').text(' º' + app.weatherTempActive);
     };
 
     const app = new WeatherApp(assignData);
+    $('.weather-temp-type').on('click', () => changeWeatherUnit(app));
 
 });
