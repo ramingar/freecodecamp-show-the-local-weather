@@ -1,0 +1,39 @@
+body {
+    background-color : rgba(32, 123, 32, .6);
+    font-size        : 14px;
+}
+
+.outer {
+    position : absolute;
+    height   : 100%;
+    width    : 100%;
+}
+
+.inner {
+    position   : absolute;
+    top        : 50%;
+    margin-top : -12.5rem;
+    height     : 25rem;
+    width      : 100%;
+}
+
+.card {
+    box-shadow : 0 0 10px 0 rgba(100, 100, 100, 1);
+    width      : 19rem;
+    height     : 25rem;
+}
+
+.card-block:first-child {
+    border-bottom : 1px solid rgba(230, 230, 230, 1);
+    height        : 11rem;
+}
+
+.card-block:nth-child(2) {
+    height : 5rem;
+}
+
+.weather-icon {
+    font-size   : 9rem;
+    line-height : 13rem;
+    margin-top  : -1rem;
+}
