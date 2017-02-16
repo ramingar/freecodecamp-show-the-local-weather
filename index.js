@@ -3,12 +3,6 @@
  */
 $(()=> {
 
-    // WARNING: getCurrentPosition() and watchPosition() no longer work on insecure origins.
-    // To use this feature, it is necessary to switch the application to a secure origin, such as HTTPS.
-    // On the other hand, though I serve my application through HTTPS, the free plan
-    // on OpenWeatherMap doesn't provide ssl, because of that it is impossible get the device's location
-    // on a mobile phone and this program doesn't work.
-
     class WeatherApp {
 
         constructor(callback) {
@@ -25,25 +19,32 @@ $(()=> {
 
             this.apiId = '38be1e36805f729eccd0ebc9fcafa83d';
 
-            navigator.geolocation.watchPosition(
-                (data) => {
-                    this.lat = data.coords.latitude;
-                    this.lon = data.coords.longitude;
-                    this.uri = `http://api.openweathermap.org/data/2.5/weather` +
-                        `?appid=${this.apiId}&lat=${this.lat}&lon=${this.lon}`;
+            this.getLocation(() => {
+                this.openWeatherUri = `http://api.openweathermap.org/data/2.5/weather` +
+                    `?appid=${this.apiId}&lat=${this.lat}&lon=${this.lon}`;
 
-                    this.getWeather(callback);
-                },
-                null,
-                {
-                    enableHighAccuracy: true,
-                    maximumAge: 5000
-                }
-            );
+                this.getWeather(callback);
+            });
+
+
+        };
+
+        getLocation(callback) {
+            // WARNING: getCurrentPosition() and watchPosition() no longer work on insecure origins.
+            // To use this feature, it is necessary to switch the application to a secure origin, such as HTTPS.
+            // On the other hand, though I serve my application through HTTPS, the free plan
+            // on OpenWeatherMap doesn't provide ssl, because of that it is impossible to get the device's location
+            // on a mobile phone and this program doesn't work on that devices.
+            // This is a workaround to get the location of the device without using HTML5 geolocation.
+            $.getJSON('http://ipinfo.io/json', {}).done((data) => {
+                this.lat = data.loc.split(',')[0];
+                this.lon = data.loc.split(',')[1];
+                callback();
+            });
         };
 
         getWeather(callback) {
-            $.getJSON(this.uri, {}).done((data) => {
+            $.getJSON(this.openWeatherUri, {}).done((data) => {
                 this.location = data.name + ', ' + data.sys.country;
                 this.weather = data.weather[0].main;
                 this.weatherCode = data.weather[0].id;
