@@ -42,7 +42,6 @@ $(()=> {
 
         getWeather(callback) {
             $.getJSON(this.uri, {}).done((data) => {
-                console.log(data);
                 this.location = data.name + ', ' + data.sys.country;
                 this.weather = data.weather[0].main;
                 this.weatherCode = data.weather[0].id;
