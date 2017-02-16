@@ -9,7 +9,6 @@ $(()=> {
             this.lat = 0;
             this.lon = 0;
             this.location = '';
-            this.weather = '';
             this.weatherCode = 0;
             this.weatherDescription = '';
             this.weatherTempActive = 'C';
@@ -17,11 +16,11 @@ $(()=> {
             this.weatherTempC = 0;
             this.weatherTempF = 0;
 
-            this.apiId = '38be1e36805f729eccd0ebc9fcafa83d';
-
             this.getLocation(() => {
-                this.openWeatherUri = `http://api.openweathermap.org/data/2.5/weather` +
-                    `?appid=${this.apiId}&lat=${this.lat}&lon=${this.lon}`;
+                this.yahooWeatherUri = `https://query.yahooapis.com/v1/public/yql?` +
+                    `q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20` +
+                    `(SELECT%20woeid%20FROM%20geo.places%20WHERE%20text%3D%22(${this.lat},${this.lon})%22)` +
+                    `&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys`;
 
                 this.getWeather(callback);
             });
@@ -30,28 +29,22 @@ $(()=> {
         };
 
         getLocation(callback) {
-            // WARNING: getCurrentPosition() and watchPosition() no longer work on insecure origins.
-            // To use this feature, it is necessary to switch the application to a secure origin, such as HTTPS.
-            // On the other hand, though I serve my application through HTTPS, the free plan
-            // on OpenWeatherMap doesn't provide ssl, because of that it is impossible to get the device's location
-            // on a mobile phone and this program doesn't work on that devices.
-            // This is a workaround to get the location of the device without using HTML5 geolocation.
-            $.getJSON('http://ipinfo.io/json', {}).done((data) => {
-                this.lat = data.loc.split(',')[0];
-                this.lon = data.loc.split(',')[1];
+            navigator.geolocation.getCurrentPosition((data) => {
+                this.lat = data.coords.latitude;
+                this.lon = data.coords.longitude;
                 callback();
             });
         };
 
         getWeather(callback) {
-            $.getJSON(this.openWeatherUri, {}).done((data) => {
-                this.location = data.name + ', ' + data.sys.country;
-                this.weather = data.weather[0].main;
-                this.weatherCode = data.weather[0].id;
-                this.weatherDescription = data.weather[0].description;
-                this.weatherTempK = Math.round((data.main.temp + 0.00001) * 100) / 100;
-                this.weatherTempC = Math.round(data.main.temp - 273.15);
-                this.weatherTempF = Math.round(((data.main.temp * (9 / 5) - 459.67) + 0.00001) * 100) / 100;
+            $.getJSON(this.yahooWeatherUri, {}).done((data) => {
+                this.location = data.query.results.channel.location.city + ', ' +
+                    data.query.results.channel.location.country;
+                this.weatherCode = data.query.results.channel.item.condition.code;
+                this.weatherDescription = data.query.results.channel.item.condition.text;
+                this.weatherTempF = parseInt(data.query.results.channel.item.condition.temp);
+                this.weatherTempK = Math.round((this.weatherTempF + 459.67) * 5 / 9);
+                this.weatherTempC = Math.round(this.weatherTempK - 273.15);
                 callback(this);
             });
         };
@@ -59,7 +52,7 @@ $(()=> {
     }
 
     const assignData = (app) => {
-        $('#weather-icon').addClass('wi wi-owm-' + app.weatherCode);
+        $('#weather-icon').addClass('wi wi-yahoo-' + app.weatherCode);
         $('#location').html(app.location);
         $('#weather').html(app.weatherDescription);
         $('.weather-temp-number').text(app.weatherTempC);
