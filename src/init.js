@@ -15,17 +15,12 @@ $(()=> {
 
     const changeWeatherUnit = (app) => {
 
-        switch (app.weatherTempActive) {
-            case 'K':
-                app.weatherTempActive = 'C';
-                break;
-            case 'C':
-                app.weatherTempActive = 'F';
-                break;
-            case 'F':
-                app.weatherTempActive = 'K';
-                break;
-        }
+        const changeUnit = {
+            K: 'C',
+            C: 'F',
+            F: 'K'
+        };
+        app.weatherTempActive = changeUnit[app.weatherTempActive];
 
         $('.weather-temp-number').text(app['weatherTemp' + app.weatherTempActive]);
         $('.weather-temp-type').text(' º' + app.weatherTempActive);
