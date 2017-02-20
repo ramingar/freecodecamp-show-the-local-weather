@@ -21,10 +21,10 @@ rollup.rollup(config)
             format: 'es'
         });
 
-        fs.writeFileSync('build/bundle.js', result.code);
+        fs.writeFileSync('build/js/bundle.js', result.code);
 
         bundle.write({
             format: 'es',
-            dest: 'build/index.js' // Exit file
+            dest: 'build/js/index.js' // Exit file
         });
     });

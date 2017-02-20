@@ -4,19 +4,12 @@
 export default class WeatherApp {
 
     constructor(callback) {
-        this.lat = 0;
-        this.lon = 0;
-        this.location = '';
-        this.weatherCode = 0;
-        this.weatherDescription = '';
-        this.weatherTempActive = 'C';
-        this.weatherTempK = 0;
-        this.weatherTempC = 0;
-        this.weatherTempF = 0;
+        this.initialize();
 
         this.getLocation(() => {
             this.yahooWeatherUri = `https://query.yahooapis.com/v1/public/yql?` +
-                `q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20` +
+                `v=` + (new Date()).getTime() +
+                `&q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20` +
                 `(SELECT%20woeid%20FROM%20geo.places%20WHERE%20text%3D%22(${this.lat},${this.lon})%22)` +
                 `&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys`;
 
@@ -25,6 +18,18 @@ export default class WeatherApp {
 
 
     };
+
+    initialize() {
+        this.lat = 0;
+        this.lon = 0;
+        this.location = '';
+        this.weatherCode = -1;
+        this.weatherDescription = '';
+        this.weatherTempActive = 'C';
+        this.weatherTempK = 0;
+        this.weatherTempC = 0;
+        this.weatherTempF = 0;
+    }
 
     getLocation(callback) {
         navigator.geolocation.getCurrentPosition((data) => {
@@ -43,8 +48,13 @@ export default class WeatherApp {
             this.weatherTempF = parseInt(data.query.results.channel.item.condition.temp);
             this.weatherTempK = Math.round((this.weatherTempF + 459.67) * 5 / 9);
             this.weatherTempC = Math.round(this.weatherTempK - 273.15);
-            callback(this);
-        });
+        }).fail((data) => {
+            switch (data.readyState) {
+                case 0:
+                    this.location = 'No internet connection';
+                    break;
+            }
+        }).always(() => callback(this));
     };
 
 }
