@@ -23,6 +23,20 @@ body {
     height     : 25rem;
 }
 
+.card-refresh {
+    position  : absolute;
+    right     : 0;
+    margin    : -1.1rem -0.6rem 0 0;
+    padding   : 0 1rem;
+    font-size : 1.2rem;
+    color     : rgba(120, 120, 120, 1);
+}
+
+.card-refresh:hover {
+    color  : rgba(0, 0, 0, 1);
+    cursor : pointer;
+}
+
 .card-block:first-child {
     border-bottom : 1px solid rgba(230, 230, 230, 1);
     height        : 11rem;
