@@ -1,10 +1,14 @@
 importScripts('/cache-polyfill.js');
 
+const APP_CACHE_NAME = 'weather-v3';
+const YAHOO_WEATHER = 'https://query.yahooapis.com/v1/public/yql';
+
 const PRECACHE_URLS = [
     '/',
     '/index.html',
     '/index.html?homescreen=1',
     '/?homescreen=1',
+    '/manifest.json',
     '/index.css',
     '/build/css/bootstrap.min.css',
     '/build/css/font-awesome.min.css',
@@ -21,19 +25,44 @@ const PRECACHE_URLS = [
     '/build/js/index.js'
 ];
 
+
+// Add static assets to cache
 self.addEventListener('install', function (e) {
     e.waitUntil(
-        caches.open('weather').then(function (cache) {
+        caches.open(APP_CACHE_NAME).then(function (cache) {
             return cache.addAll(PRECACHE_URLS);
         })
     );
 });
 
+// Remove unused caches (old caches) after the activation event
+self.addEventListener('activate', function (event) {
+    event.waitUntil(
+        caches.keys().then(function (cacheNames) {
+            return Promise.all(
+                cacheNames.filter(function (cacheName) {
+                    // Return true if you want to remove this cache,
+                    // but remember that caches are shared across
+                    // the whole origin
+                    return /^weather/.test(cacheName) && APP_CACHE_NAME !== cacheName;
+                }).map(function (cacheName) {
+                    return caches.delete(cacheName);
+                })
+            );
+        })
+    );
+});
+
+// For each request, return cached response or make the request normally if response is not cached
 self.addEventListener('fetch', function (event) {
-    console.log(event.request.url);
     event.respondWith(
-        caches.match(event.request).then(function (response) {
-            return response || fetch(event.request);
+        caches.open(APP_CACHE_NAME).then(function(cache) {
+            return caches.match(event.request).then(function (response) {
+                return response || fetch(event.request).then(function(response) {
+                        cache.put(event.request, response.clone());
+                        return response;
+                    });
+            });
         })
     );
 });
