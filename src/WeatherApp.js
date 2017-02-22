@@ -3,8 +3,8 @@
  */
 export default class WeatherApp {
 
-    constructor(callback) {
-        this.getData(callback);
+    constructor(callbackSuccess, callbackError) {
+        this.getData(callbackSuccess, callbackError);
     };
 
     initialize() {
@@ -17,10 +17,10 @@ export default class WeatherApp {
         this.weatherTempK = 0;
         this.weatherTempC = 0;
         this.weatherTempF = 0;
-        this.networkError = -1;
+        this.errorCode = -1;
     }
 
-    getData(callback) {
+    getData(callbackSuccess, callbackError) {
         this.initialize();
 
         this.getLocation(() => {
@@ -29,19 +29,22 @@ export default class WeatherApp {
                 `(SELECT%20woeid%20FROM%20geo.places%20WHERE%20text%3D%22(${this.lat},${this.lon})%22)` +
                 `&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys`;
 
-            this.getWeather(callback);
+            this.getWeather(callbackSuccess, callbackError);
         });
     }
 
-    getLocation(callback) {
+    getLocation(callbackSuccess, callbackError) {
         navigator.geolocation.getCurrentPosition((data) => {
             this.lat = Math.round(data.coords.latitude * 100) / 100;
             this.lon = Math.round(data.coords.longitude * 100) / 100;
-            callback();
+            callbackSuccess();
+        }, (data) => {
+            this.errorCode = data;
+            callbackError(this);
         });
     };
 
-    getWeather(callback) {
+    getWeather(callbackSuccess, callbackError) {
 
         let cacheDataReceived = false;
 
@@ -61,7 +64,7 @@ export default class WeatherApp {
                 $.getJSON(this.yahooWeatherUri, {}).done((data) => {
                     resolve(data);
                 }).fail((data) => {
-                    this.networkError = data.readyState;  // 0 == No internet connection
+                    this.errorCode = data.readyState;  // 0 == No internet connection
                     reject(data);
                 });
             });
@@ -77,24 +80,25 @@ export default class WeatherApp {
             return data.json();
         }).then((data) => {
             assignData(data);
-            callback(this);
+            callbackSuccess(this);
             cacheDataReceived = true;
             return networkUpdate();
         }, () => {
             return networkUpdate();
         }).then((data) => {
             assignData(data);
-            callback(this);
+            callbackSuccess(this);
         }, () => {
             if (!cacheDataReceived) {
                 // no network connection and geolocation is different than cached geolocation
-                switch (this.networkError) {
+                switch (this.errorCode) {
                     case 0:
                         this.location = 'No internet connection';
                         break;
                 }
-                callback(this);
+                callbackSuccess(this);
             }
+            callbackError(this);
         });
     };
 

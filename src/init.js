@@ -30,6 +30,20 @@ $(()=> {
         $('.weather-temp-type').text('');
     };
 
+    const showAlertMessage = () => {
+        var elm = $('.alert')[0];
+        var newone = elm.cloneNode(true);
+        elm.parentNode.replaceChild(newone, elm);
+
+        $(newone).addClass('alert-show-message');
+    };
+
+    const errorHandler = (app) => {
+        if (0 === app.errorCode) {
+            showAlertMessage();
+        }
+    };
+
     const changeWeatherUnit = (app) => {
 
         const changeUnit = {
@@ -43,11 +57,11 @@ $(()=> {
         $('.weather-temp-type').text(' º' + app.weatherTempActive);
     };
 
-    const app = new WeatherApp(assignData);
+    const app = new WeatherApp(assignData, errorHandler);
     $('.weather-temp-type').on('click', () => changeWeatherUnit(app));
     $('#card-refresh').on('click', () => {
         refreshData();
-        app.getData(assignData);
+        app.getData(assignData, errorHandler);
     });
 
 });
