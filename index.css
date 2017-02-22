@@ -3,6 +3,30 @@ body {
     font-size        : 14px;
 }
 
+.alert {
+    transform  : translateY(-4rem);
+}
+
+.alert-show-message {
+    animation-name: show-alert-message;
+    animation-duration: 3s;
+}
+
+@keyframes show-alert-message {
+    0% {
+        transform  : translateY(-4rem);
+    }
+    20% {
+        transform  : translateY(0);
+    }
+    80% {
+        transform  : translateY(0);
+    }
+    100% {
+        transform  : translateY(-4rem);
+    }
+}
+
 .outer {
     position : absolute;
     height   : 100%;

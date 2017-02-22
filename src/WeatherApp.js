@@ -3,19 +3,8 @@
  */
 export default class WeatherApp {
 
-    constructor(callback) {
-        this.initialize();
-
-        this.getLocation(() => {
-            this.yahooWeatherUri = `https://query.yahooapis.com/v1/public/yql?` +
-                `q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20` +
-                `(SELECT%20woeid%20FROM%20geo.places%20WHERE%20text%3D%22(${this.lat},${this.lon})%22)` +
-                `&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys`;
-
-            this.getWeather(callback);
-        });
-
-
+    constructor(callbackSuccess, callbackError) {
+        this.getData(callbackSuccess, callbackError);
     };
 
     initialize() {
@@ -28,19 +17,36 @@ export default class WeatherApp {
         this.weatherTempK = 0;
         this.weatherTempC = 0;
         this.weatherTempF = 0;
+        this.errorCode = -1;
     }
 
-    getLocation(callback) {
+    getData(callbackSuccess, callbackError) {
+        this.initialize();
+
+        this.getLocation(() => {
+            this.yahooWeatherUri = `https://query.yahooapis.com/v1/public/yql?` +
+                `q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20` +
+                `(SELECT%20woeid%20FROM%20geo.places%20WHERE%20text%3D%22(${this.lat},${this.lon})%22)` +
+                `&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys`;
+
+            this.getWeather(callbackSuccess, callbackError);
+        });
+    }
+
+    getLocation(callbackSuccess, callbackError) {
         navigator.geolocation.getCurrentPosition((data) => {
             this.lat = Math.round(data.coords.latitude * 100) / 100;
             this.lon = Math.round(data.coords.longitude * 100) / 100;
-            callback();
+            callbackSuccess();
+        }, (data) => {
+            this.errorCode = data;
+            callbackError(this);
         });
     };
 
-    getWeather(callback) {
+    getWeather(callbackSuccess, callbackError) {
 
-        let networkDataReceived = false;
+        let cacheDataReceived = false;
 
         const assignData = (data) => {
             this.location = data.query.results.channel.location.city + ', ' +
@@ -56,36 +62,43 @@ export default class WeatherApp {
         const networkUpdate = () => {
             return new Promise((resolve, reject) => {
                 $.getJSON(this.yahooWeatherUri, {}).done((data) => {
-                    networkDataReceived = true;
-                    assignData(data);
                     resolve(data);
                 }).fail((data) => {
-                    switch (data.readyState) {
-                        case 0:
-                            this.location = 'No internet connection';
-                            break;
-                    }
+                    this.errorCode = data.readyState;  // 0 == No internet connection
                     reject(data);
                 });
             });
         };
 
         // fetch cached data
-        caches.match(this.yahooWeatherUri).then((data) => {
+        // network == true  || cache == true   => network
+        // network == true  || cache == false  => network
+        // network == false || cache == true   => cache   (don't do anything (app displayed cached data before))
+        // network == false || cache == false  => network (message: 'no internet connection')
+        const promise = caches.match(this.yahooWeatherUri).then((data) => {
             if (!data) throw new Error("No data");
             return data.json();
         }).then((data) => {
-            // don't overwrite newer network data
-            if (!networkDataReceived) {
-                assignData(data);
-            }
-        }).catch(() => {
-            // we didn't get cached data
+            assignData(data);
+            callbackSuccess(this);
+            cacheDataReceived = true;
+            return networkUpdate();
+        }, () => {
             return networkUpdate();
         }).then((data) => {
-            callback(this);
-        }, (data) => {
-            callback(this);
+            assignData(data);
+            callbackSuccess(this);
+        }, () => {
+            if (!cacheDataReceived) {
+                // no network connection and geolocation is different than cached geolocation
+                switch (this.errorCode) {
+                    case 0:
+                        this.location = 'No internet connection';
+                        break;
+                }
+                callbackSuccess(this);
+            }
+            callbackError(this);
         });
     };
 

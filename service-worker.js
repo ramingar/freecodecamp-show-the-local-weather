@@ -22,7 +22,14 @@ const PRECACHE_URLS = [
     '/build/fonts/fontawesome-webfont.woff?v=4.7.0',
     '/build/fonts/fontawesome-webfont.woff2?v=4.7.0',
     '/build/js/jquery.min.js',
-    '/build/js/index.js'
+    '/build/js/index.js',
+    '/icons/android-chrome-36x36.png',
+    '/icons/android-chrome-48x48.png',
+    '/icons/android-chrome-72x72.png',
+    'icons/android-chrome-96x96.png',
+    '/icons/android-chrome-144x144.png',
+    '/icons/android-chrome-192x192.png',
+    '/icons/android-chrome-256x256.png'
 ];
 
 
@@ -58,6 +65,14 @@ self.addEventListener('fetch', function (event) {
     event.respondWith(
         caches.open(APP_CACHE_NAME).then(function(cache) {
             return caches.match(event.request).then(function (response) {
+                const regex = new RegExp(YAHOO_WEATHER);
+                if (regex.test(event.request.url)) {
+                    return fetch(event.request).then(function(response) {
+                            cache.put(event.request, response.clone());
+                            return response;
+                        });
+                }
+
                 return response || fetch(event.request).then(function(response) {
                         cache.put(event.request, response.clone());
                         return response;
