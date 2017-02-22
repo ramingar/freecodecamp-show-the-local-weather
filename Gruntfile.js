@@ -17,6 +17,13 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         flatten: true,
+                        src: ['README-build.md'],
+                        dest: 'build/',
+                        filter: 'isFile'
+                    },
+                    {
+                        expand: true,
+                        flatten: true,
                         src: ['node_modules/weather-icons/font/**'],
                         dest: 'build/font/',
                         filter: 'isFile'
