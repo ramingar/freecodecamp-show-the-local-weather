@@ -47,8 +47,7 @@ $(()=> {
     $('.weather-temp-type').on('click', () => changeWeatherUnit(app));
     $('#card-refresh').on('click', () => {
         refreshData();
-        app.initialize();
-        app.getWeather(assignData);
+        app.getData(assignData);
     });
 
 });
