@@ -23,6 +23,8 @@ const PRECACHE_URLS = [
     './build/fonts/fontawesome-webfont.woff2?v=4.7.0',
     './build/js/jquery.min.js',
     './build/js/index.js',
+    './build/js/bootstrap.min.js',
+    './build/js/tether.min.js',
     './icons/android-chrome-36x36.png',
     './icons/android-chrome-48x48.png',
     './icons/android-chrome-72x72.png',
