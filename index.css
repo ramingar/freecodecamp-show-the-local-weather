@@ -4,17 +4,17 @@ body {
 }
 
 .alert {
-    transform  : translateY(-4rem);
+    transform  : translateY(-5rem);
 }
 
 .alert-show-message {
     animation-name: show-alert-message;
-    animation-duration: 3s;
+    animation-duration: 4s;
 }
 
 @keyframes show-alert-message {
     0% {
-        transform  : translateY(-4rem);
+        transform  : translateY(-5rem);
     }
     20% {
         transform  : translateY(0);
@@ -23,7 +23,7 @@ body {
         transform  : translateY(0);
     }
     100% {
-        transform  : translateY(-4rem);
+        transform  : translateY(-5rem);
     }
 }
 
