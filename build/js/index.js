@@ -101,36 +101,53 @@ var WeatherApp = function () {
                 });
             };
 
-            // fetch cached data
-            // network == true  || cache == true   => network
-            // network == true  || cache == false  => network
-            // network == false || cache == true   => cache   (don't do anything (app displayed cached data before))
-            // network == false || cache == false  => network (message: 'no internet connection')
-            var promise = caches.match(this.yahooWeatherUri).then(function (data) {
-                if (!data) throw new Error("No data");
-                return data.json();
-            }).then(function (data) {
-                assignData(data);
-                callbackSuccess(_this3);
-                cacheDataReceived = true;
-                return networkUpdate();
-            }, function () {
-                return networkUpdate();
-            }).then(function (data) {
-                assignData(data);
-                callbackSuccess(_this3);
-            }, function () {
-                if (!cacheDataReceived) {
-                    // no network connection and geolocation is different than cached geolocation
-                    switch (_this3.errorCode) {
-                        case 0:
-                            _this3.location = 'No internet connection';
-                            break;
-                    }
+            var fetchDataIfCachesWorks = function fetchDataIfCachesWorks() {
+                // fetch cached data
+                // network == true  || cache == true   => network
+                // network == true  || cache == false  => network
+                // network == false || cache == true   => cache   (don't do anything (app displayed cached data before))
+                // network == false || cache == false  => network (message: 'no internet connection')
+                var promise = caches.match(_this3.yahooWeatherUri).then(function (data) {
+                    if (!data) throw new Error("No data");
+                    return data.json();
+                }).then(function (data) {
+                    assignData(data);
                     callbackSuccess(_this3);
-                }
-                callbackError(_this3);
-            });
+                    cacheDataReceived = true;
+                    return networkUpdate();
+                }, function () {
+                    return networkUpdate();
+                }).then(function (data) {
+                    assignData(data);
+                    callbackSuccess(_this3);
+                }, function () {
+                    if (!cacheDataReceived) {
+                        // no network connection and geolocation is different than cached geolocation
+                        switch (_this3.errorCode) {
+                            case 0:
+                                _this3.location = 'No internet connection';
+                                break;
+                        }
+                        callbackSuccess(_this3);
+                    }
+                    callbackError(_this3);
+                });
+            };
+
+            var fetchDataIfCachesUndefined = function fetchDataIfCachesUndefined() {
+                networkUpdate().then(function (data) {
+                    assignData(data);
+                    callbackSuccess(_this3);
+                }, function () {
+                    callbackError(_this3);
+                });
+            };
+
+            if ('undefined' == typeof caches) {
+                fetchDataIfCachesUndefined();
+            } else {
+                fetchDataIfCachesWorks();
+            }
         }
     }]);
     return WeatherApp;
