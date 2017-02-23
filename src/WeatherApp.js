@@ -70,36 +70,53 @@ export default class WeatherApp {
             });
         };
 
-        // fetch cached data
-        // network == true  || cache == true   => network
-        // network == true  || cache == false  => network
-        // network == false || cache == true   => cache   (don't do anything (app displayed cached data before))
-        // network == false || cache == false  => network (message: 'no internet connection')
-        const promise = caches.match(this.yahooWeatherUri).then((data) => {
-            if (!data) throw new Error("No data");
-            return data.json();
-        }).then((data) => {
-            assignData(data);
-            callbackSuccess(this);
-            cacheDataReceived = true;
-            return networkUpdate();
-        }, () => {
-            return networkUpdate();
-        }).then((data) => {
-            assignData(data);
-            callbackSuccess(this);
-        }, () => {
-            if (!cacheDataReceived) {
-                // no network connection and geolocation is different than cached geolocation
-                switch (this.errorCode) {
-                    case 0:
-                        this.location = 'No internet connection';
-                        break;
-                }
+        const fetchDataIfCachesWorks = () => {
+            // fetch cached data
+            // network == true  || cache == true   => network
+            // network == true  || cache == false  => network
+            // network == false || cache == true   => cache   (don't do anything (app displayed cached data before))
+            // network == false || cache == false  => network (message: 'no internet connection')
+            const promise = caches.match(this.yahooWeatherUri).then((data) => {
+                if (!data) throw new Error("No data");
+                return data.json();
+            }).then((data) => {
+                assignData(data);
                 callbackSuccess(this);
-            }
-            callbackError(this);
-        });
+                cacheDataReceived = true;
+                return networkUpdate();
+            }, () => {
+                return networkUpdate();
+            }).then((data) => {
+                assignData(data);
+                callbackSuccess(this);
+            }, () => {
+                if (!cacheDataReceived) {
+                    // no network connection and geolocation is different than cached geolocation
+                    switch (this.errorCode) {
+                        case 0:
+                            this.location = 'No internet connection';
+                            break;
+                    }
+                    callbackSuccess(this);
+                }
+                callbackError(this);
+            });
+        };
+
+        const fetchDataIfCachesUndefined = () => {
+            networkUpdate().then((data) => {
+                assignData(data);
+                callbackSuccess(this);
+            }, () => {
+                callbackError(this);
+            });
+        };
+
+        if ('undefined' == typeof caches) {
+            fetchDataIfCachesUndefined();
+        } else {
+            fetchDataIfCachesWorks();
+        }
     };
 
 }
