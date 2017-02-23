@@ -1,6 +1,6 @@
 {
-  "name": "Weather",
-  "short_name": "W",
+  "name": "Local Weather App",
+  "short_name": "LWA",
   "icons": [
     {
       "src": "./icons/android-chrome-36x36.png",
