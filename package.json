@@ -1,6 +1,6 @@
 {
   "name": "freecodecamp-show-the-local-weather",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "One of the projects for the FreeCampCode's Front End Development Certificate.",
   "main": "index.js",
   "scripts": {
