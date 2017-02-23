@@ -1,4 +1,4 @@
-importScripts('/cache-polyfill.js');
+importScripts('./cache-polyfill.js');
 
 const APP_CACHE_NAME = 'weather-v1';
 const YAHOO_WEATHER = 'https://query.yahooapis.com/v1/public/yql';
