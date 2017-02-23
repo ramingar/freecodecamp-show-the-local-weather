@@ -143,8 +143,7 @@ $(function () {
 
     // Registering Service Workers
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('../../service-worker.js') // transpiled path will be '/build/js/index.js'
-        .then(function () {
+        navigator.serviceWorker.register('service-worker.js').then(function () {
             console.log("Service Worker Registered");
         });
     }
