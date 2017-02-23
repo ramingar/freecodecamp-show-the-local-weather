@@ -1,35 +1,35 @@
 importScripts('/cache-polyfill.js');
 
-const APP_CACHE_NAME = 'weather-v3';
+const APP_CACHE_NAME = 'weather-v1';
 const YAHOO_WEATHER = 'https://query.yahooapis.com/v1/public/yql';
 
 const PRECACHE_URLS = [
-    '/',
-    '/index.html',
-    '/index.html?homescreen=1',
-    '/?homescreen=1',
-    '/manifest.json',
-    '/index.css',
-    '/build/css/bootstrap.min.css',
-    '/build/css/font-awesome.min.css',
-    '/build/css/font-awesome.min.css?v=4.7.0',
-    '/build/css/weather-icons.min.css',
-    '/build/font/weathericons-regular-webfont.svg',
-    '/build/font/weathericons-regular-webfont.ttf',
-    '/build/font/weathericons-regular-webfont.woff',
-    '/build/font/weathericons-regular-webfont.woff2',
-    '/build/fonts/fontawesome-webfont.ttf?v=4.7.0',
-    '/build/fonts/fontawesome-webfont.woff?v=4.7.0',
-    '/build/fonts/fontawesome-webfont.woff2?v=4.7.0',
-    '/build/js/jquery.min.js',
-    '/build/js/index.js',
-    '/icons/android-chrome-36x36.png',
-    '/icons/android-chrome-48x48.png',
-    '/icons/android-chrome-72x72.png',
-    'icons/android-chrome-96x96.png',
-    '/icons/android-chrome-144x144.png',
-    '/icons/android-chrome-192x192.png',
-    '/icons/android-chrome-256x256.png'
+    './',
+    './index.html',
+    './index.html?homescreen=1',
+    './?homescreen=1',
+    './manifest.json',
+    './index.css',
+    './build/css/bootstrap.min.css',
+    './build/css/font-awesome.min.css',
+    './build/css/font-awesome.min.css?v=4.7.0',
+    './build/css/weather-icons.min.css',
+    './build/font/weathericons-regular-webfont.svg',
+    './build/font/weathericons-regular-webfont.ttf',
+    './build/font/weathericons-regular-webfont.woff',
+    './build/font/weathericons-regular-webfont.woff2',
+    './build/fonts/fontawesome-webfont.ttf?v=4.7.0',
+    './build/fonts/fontawesome-webfont.woff?v=4.7.0',
+    './build/fonts/fontawesome-webfont.woff2?v=4.7.0',
+    './build/js/jquery.min.js',
+    './build/js/index.js',
+    './icons/android-chrome-36x36.png',
+    './icons/android-chrome-48x48.png',
+    './icons/android-chrome-72x72.png',
+    './icons/android-chrome-96x96.png',
+    './icons/android-chrome-144x144.png',
+    './icons/android-chrome-192x192.png',
+    './icons/android-chrome-256x256.png'
 ];
 
 
