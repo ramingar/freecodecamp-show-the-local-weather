@@ -1,6 +1,6 @@
 importScripts('./cache-polyfill.js');
 
-const APP_CACHE_NAME = 'weather-v1';
+const APP_CACHE_NAME = 'weather-v2';
 const YAHOO_WEATHER = 'https://query.yahooapis.com/v1/public/yql';
 
 const PRECACHE_URLS = [
@@ -31,7 +31,20 @@ const PRECACHE_URLS = [
     './icons/android-chrome-96x96.png',
     './icons/android-chrome-144x144.png',
     './icons/android-chrome-192x192.png',
-    './icons/android-chrome-256x256.png'
+    './icons/android-chrome-256x256.png',
+    './icons/apple-touch-icon.png',
+    './icons/apple-touch-icon-57x57.png',
+    './icons/apple-touch-icon-60x60.png',
+    './icons/apple-touch-icon-72x72.png',
+    './icons/apple-touch-icon-76x76.png',
+    './icons/apple-touch-icon-114x114.png',
+    './icons/apple-touch-icon-120x120.png',
+    './icons/apple-touch-icon-144x144.png',
+    './icons/apple-touch-icon-152x152.png',
+    './icons/apple-touch-icon-180x180.png',
+    './icons/favicon-16x16.png',
+    './icons/favicon-32x32.png',
+    './icons/mstile-150x150.png'
 ];
 
 
@@ -65,17 +78,17 @@ self.addEventListener('activate', function (event) {
 // For each request, return cached response or make the request normally if response is not cached
 self.addEventListener('fetch', function (event) {
     event.respondWith(
-        caches.open(APP_CACHE_NAME).then(function(cache) {
+        caches.open(APP_CACHE_NAME).then(function (cache) {
             return caches.match(event.request).then(function (response) {
                 const regex = new RegExp(YAHOO_WEATHER);
                 if (regex.test(event.request.url)) {
-                    return fetch(event.request).then(function(response) {
-                            cache.put(event.request, response.clone());
-                            return response;
-                        });
+                    return fetch(event.request).then(function (response) {
+                        cache.put(event.request, response.clone());
+                        return response;
+                    });
                 }
 
-                return response || fetch(event.request).then(function(response) {
+                return response || fetch(event.request).then(function (response) {
                         cache.put(event.request, response.clone());
                         return response;
                     });
