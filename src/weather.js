@@ -1,11 +1,18 @@
 /**
  * Created by rafael on 17/02/17.
  */
-export default class WeatherApp {
+const weatherProto = {
 
-    constructor(callbackSuccess, callbackError) {
-        this.getData(callbackSuccess, callbackError);
-    };
+    lat: 0,
+    lon: 0,
+    location: '',
+    weatherCode: -1,
+    weatherDescription: '',
+    weatherTempActive: 'C',
+    weatherTempK: 0,
+    weatherTempC: 0,
+    weatherTempF: 0,
+    errorCode: -1,
 
     initialize() {
         this.lat = 0;
@@ -18,7 +25,7 @@ export default class WeatherApp {
         this.weatherTempC = 0;
         this.weatherTempF = 0;
         this.errorCode = -1;
-    }
+    },
 
     getData(callbackSuccess, callbackError) {
         this.initialize();
@@ -31,7 +38,7 @@ export default class WeatherApp {
 
             this.getWeather(callbackSuccess, callbackError);
         });
-    }
+    },
 
     getLocation(callbackSuccess, callbackError) {
         navigator.geolocation.getCurrentPosition((data) => {
@@ -42,7 +49,7 @@ export default class WeatherApp {
             this.errorCode = data;
             callbackError(this);
         });
-    };
+    },
 
     getWeather(callbackSuccess, callbackError) {
 
@@ -92,7 +99,7 @@ export default class WeatherApp {
             }, () => {
                 if (!cacheDataReceived) {
                     // no network connection and geolocation is different than cached geolocation
-                    switch (this.errorCode) {
+                    switch (errorCode) {
                         case 0:
                             this.location = 'No internet connection';
                             break;
@@ -117,6 +124,9 @@ export default class WeatherApp {
         } else {
             fetchDataIfCachesWorks();
         }
-    };
+    }
+};
 
-}
+export default weather = () => {
+    return Object.assign({}, weatherProto);
+};

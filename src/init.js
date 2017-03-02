@@ -1,7 +1,7 @@
 /**
  * Created by rafael on 15/02/17.
  */
-import WeatherApp from './WeatherApp';
+import weather from './weather';
 
 $(()=> {
 
@@ -57,7 +57,9 @@ $(()=> {
         $('.weather-temp-type').text(' º' + app.weatherTempActive);
     };
 
-    const app = new WeatherApp(assignData, errorHandler);
+    const app = weather();
+    app.getData(assignData, errorHandler);
+
     $('.weather-temp-type').on('click', () => changeWeatherUnit(app));
     $('#card-refresh').on('click', () => {
         refreshData();
